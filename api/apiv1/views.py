@@ -29,7 +29,7 @@ def api_root(request, format=None):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_account(request):
-    print(request.body)
+    #print(request.body)
     j = json.loads(request.body)
     u = User.objects.create(email=j['email'], username=j['username'])
     u.set_password(j['password'])
@@ -107,7 +107,7 @@ class QueueGroupViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['put'], permission_classes=[IsAuthenticated], url_path='join-group')
     def join_group(self, request):
-        print(request.body)
+        #print(request.body)
         j = json.loads(request.body)
 
         listener = Listener.objects.get(user=request.user);
@@ -127,7 +127,7 @@ class QueueGroupViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['put'], permission_classes=[IsAuthenticated], url_path='queue-song')
     def queue_song(self, request):
-        print(request.body)
+        #print(request.body)
         j = json.loads(request.body)
 
         listener = Listener.objects.get(user=request.user);
@@ -140,7 +140,7 @@ class QueueGroupViewSet(viewsets.ModelViewSet):
         data = {'action': 'pull_group', 'group': my_group.pk}
 
         participants = Listener.objects.filter(active_queuegroup=my_group)
-        print(str(participants))
+        #print(str(participants))
         #reg_ids = []
         for part in participants:
             gcm.plaintext_request(registration_id=part.gcm_id, data=data)
@@ -153,7 +153,7 @@ class QueueGroupViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['put'], permission_classes=[IsAuthenticated], url_path='remove-song')
     def remove_song(self, request):
-        print(request.body)
+        #print(request.body)
         j = json.loads(request.body)
 
         listener = Listener.objects.get(user=request.user);
@@ -166,7 +166,7 @@ class QueueGroupViewSet(viewsets.ModelViewSet):
         data = {'action': 'pull_group', 'group': my_group.pk}
 
         participants = Listener.objects.filter(active_queuegroup=my_group)
-        print(str(participants))
+        #print(str(participants))
         #reg_ids = []
         for part in participants:
             gcm.plaintext_request(registration_id=part.gcm_id, data=data)
@@ -179,7 +179,8 @@ class QueueGroupViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['put'], permission_classes=[IsAuthenticated], url_path='update-song')
     def update_song(self, request):
-        print(request.body)
+        #print(request.body)
+        send_gcm = True
         j = json.loads(request.body)
 
         listener = Listener.objects.get(user=request.user);
@@ -197,20 +198,23 @@ class QueueGroupViewSet(viewsets.ModelViewSet):
                 track.rating -= 1
                 track.voted_down.add(listener)
                 track.voted_up.remove(listener)
+            else:
+                send_gcm = False
         track.save()
 
-        gcm = GCM(API_KEY)
-        data = {'action': 'pull_group', 'group': my_group.pk}
+        if send_gcm:
+            gcm = GCM(API_KEY)
+            data = {'action': 'pull_group', 'group': my_group.pk}
 
-        participants = Listener.objects.filter(active_queuegroup=my_group)
-        print(str(participants))
-        #reg_ids = []
-        for part in participants:
-            gcm.plaintext_request(registration_id=part.gcm_id, data=data)
-            #reg_ids.append(part.gcm_id)
-        #print(str(reg_ids))
+            participants = Listener.objects.filter(active_queuegroup=my_group)
+            #print(str(participants))
+            #reg_ids = []
+            for part in participants:
+                gcm.plaintext_request(registration_id=part.gcm_id, data=data)
+                #reg_ids.append(part.gcm_id)
+            #print(str(reg_ids))
 
-        #gcm.plaintext_request(registration_ids=reg_ids, data=data)
+            #gcm.plaintext_request(registration_ids=reg_ids, data=data)
 
         return Response(self.get_serializer(my_group).data)
 
