@@ -189,11 +189,11 @@ class QueueGroupViewSet(viewsets.ModelViewSet):
         if 'played' in j:
             track.played = j['played']
         if 'vote' in j:
-            if j['vote'] > 0 and not track.voted_up.get(listener):
+            if j['vote'] > 0 and not track.voted_up.get(pk=listener.pk):
                 track.rating += 1
                 track.voted_up.add(listener)
                 track.voted_down.remove(listener)
-            elif j['vote'] < 0 and not track.voted_down.get(listener):
+            elif j['vote'] < 0 and not track.voted_down.get(pk=listener.pk):
                 track.rating -= 1
                 track.voted_down.add(listener)
                 track.voted_up.remove(listener)
