@@ -188,6 +188,15 @@ class QueueGroupViewSet(viewsets.ModelViewSet):
         track = QueueTrack.objects.get(pk=j['pk'])
         if 'played' in j:
             track.played = j['played']
+        if 'vote' in j:
+            if j['vote'] > 0 and not track.voted_up.get(listener):
+                track.rating += 1
+                track.voted_up.add(listener)
+                track.voted_down.remove(listener)
+            elif j['vote'] < 0 and not track.voted_down.get(listener):
+                track.rating -= 1
+                track.voted_down.add(listener)
+                track.voted_up.remove(listener)
         track.save()
 
         gcm = GCM(API_KEY)

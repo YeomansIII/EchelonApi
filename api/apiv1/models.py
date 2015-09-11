@@ -33,6 +33,8 @@ class QueueTrack(models.Model):
     rating = models.IntegerField(default = 0)
     in_queue = models.ForeignKey(QueueGroup, related_name="track_queue")
     played = models.BooleanField(default=False)
+    voted_up = models.ManyToManyField(Listener)
+    voted_down = models.ManyToManyField(Listener)
 
     class Meta:
         ordering = ['rating','created_at']
