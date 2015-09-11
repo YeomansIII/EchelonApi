@@ -27,18 +27,6 @@ class QueueGroup(models.Model):
                                       choices=PRIVACY_CHOICES,
                                       default=FRIENDS_ONLY)
 
-class QueueTrack(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    spotify_id = models.CharField(max_length=100)
-    rating = models.IntegerField(default = 0)
-    in_queue = models.ForeignKey(QueueGroup, related_name="track_queue")
-    played = models.BooleanField(default=False)
-    voted_up = models.ManyToManyField(Listener)
-    voted_down = models.ManyToManyField(Listener)
-
-    class Meta:
-        ordering = ['rating','created_at']
-
 class Listener(models.Model):
     user = models.OneToOneField(User)
     gcm_id = models.CharField(max_length=3000)
@@ -48,6 +36,18 @@ class Listener(models.Model):
 
     def __unicode__(self):
         return self.user.username
+
+class QueueTrack(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    spotify_id = models.CharField(max_length=100)
+    rating = models.IntegerField(default = 0)
+    in_queue = models.ForeignKey(QueueGroup, related_name="track_queue")
+    played = models.BooleanField(default=False)
+    voted_up = models.ManyToManyField(Listener, related_name="voted_up")
+    voted_down = models.ManyToManyField(Listener, related_name="voted_down")
+
+    class Meta:
+        ordering = ['rating','created_at']
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
