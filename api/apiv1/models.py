@@ -47,7 +47,7 @@ class QueueTrack(models.Model):
     voted_down = models.ManyToManyField(Listener, related_name="voted_down")
 
     class Meta:
-        ordering = ['rating']
+        ordering = ['-rating','created_at']
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
