@@ -42,6 +42,8 @@ class QueueTrack(models.Model):
     spotify_id = models.CharField(max_length=100)
     rating = models.IntegerField(default = 0)
     in_queue = models.ForeignKey(QueueGroup, related_name="track_queue")
+    now_playing = models.BooleanField(default=False)
+    position = models.IntegerField(default=0)
     played = models.BooleanField(default=False)
     voted_up = models.ManyToManyField(Listener, related_name="voted_up")
     voted_down = models.ManyToManyField(Listener, related_name="voted_down")
