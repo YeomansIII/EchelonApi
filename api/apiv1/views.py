@@ -189,6 +189,8 @@ class QueueGroupViewSet(viewsets.ModelViewSet):
         track = QueueTrack.objects.get(pk=j['pk'])
         if 'played' in j:
             track.played = j['played']
+        if 'now_playing' in j:
+            track.now_playing = j['now_playing']
         if 'vote' in j:
             if j['vote'] > 0 and (track.voted_up.filter(pk=listener.pk).first() is None):
                 track.rating = track.rating + 1

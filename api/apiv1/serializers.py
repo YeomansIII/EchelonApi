@@ -20,7 +20,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class QueueTrackSeializer(serializers.ModelSerializer):
     class Meta:
         model = QueueTrack
-        fields = ('pk', 'spotify_id','rating', 'played')
+        fields = ('pk', 'spotify_id','rating', 'played', 'now_playing')
         view_name = "apiv1:queuetrack-detail"
 
 
